@@ -15,6 +15,14 @@ var budgetController = (function(){
         this.value = value;
     }
 
+    var calculateTotal = function(type){
+        var sum = 0;
+        data.allItems[type].forEach(function(cur){
+            sum += cur.value;
+        });
+        data.totals[type] = sum;
+    }
+
     //setting up a data structure for expenses and income____________________________________
     var data = {
         allItems: {
@@ -24,9 +32,9 @@ var budgetController = (function(){
         totals: {
             exp: 0,
             inc: 0,
-        }
-        
-
+        },
+        budget: 0,
+        percentage: -1
     };
     // globalizing the data structure
     return {
@@ -52,7 +60,21 @@ var budgetController = (function(){
             data.allItems[type].push(newItem)
             // return the new element
             return newItem            
-        }
+        },
+        calculateBudget: function(){
+            
+            // calculate total income and expenses
+            calculateTotal('exp');
+            calculateTotal('inc');
+            // calculate the buget income - expenses
+            data.budget = data.totals.inc - data.totals.exp
+
+            // calculate the percentage of income that we spent and rounding 
+            data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+        },
+        testing: function(){
+            console.log(data)
+        },
     }
 
 })();
@@ -135,6 +157,7 @@ var controller = (function(budgetCtrl, UICtrl){
 
     var updateBudget = function(){
         // 1. calculate the budget
+        budgetCtrl.calculateBudget()
         // 2. Return the budget
         // 3. display budget on UI
 
