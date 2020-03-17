@@ -75,7 +75,7 @@ var UIController = (function(){
                 // pulling data from the user input in html form/input
                 type: document.querySelector(DOMstrings.inputType).value,// either inc or exp
                 description: document.querySelector(DOMstrings.inputDescription).value,
-                value: document.querySelector(DOMstrings.inputValue).value
+                value: parseFloat(document.querySelector(DOMstrings.inputValue).value)
             };
         },
 
@@ -109,7 +109,7 @@ var UIController = (function(){
             })
             fieldsArr[0].focus();
         },
-        
+
         // globalizing the DOMstring object to acces it in the controller
         getDOMstrings: function(){
             return DOMstrings;
@@ -133,6 +133,13 @@ var controller = (function(budgetCtrl, UICtrl){
         });
     };
 
+    var updateBudget = function(){
+        // 1. calculate the budget
+        // 2. Return the budget
+        // 3. display budget on UI
+
+    }
+
     var ctrlAddItem = function(){
         var input, newItem;
         // 1. get the field input data
@@ -144,8 +151,8 @@ var controller = (function(budgetCtrl, UICtrl){
         UICtrl.addListItem(newItem, input.type);
         // 4. Clear the fields
         UICtrl.clearFields();
-        // 4. calculate the budget
-        // 5. display budget on UI
+        // 5. calculate and update budget
+        updateBudget();
     }
     
     return {
