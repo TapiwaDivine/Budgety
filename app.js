@@ -17,7 +17,7 @@ var budgetController = (function(){
 
     //setting up a data structure for expenses and income____________________________________
     var data = {
-        allItems = {
+        allItems: {
             exp: [],
             inc: [],
         },
@@ -31,7 +31,7 @@ var budgetController = (function(){
     // globalizing the data structure
     return {
         addItem: function(type, des, val){
-            var newItem; ID;
+            var newItem, ID;
 
             // ID to be last ID + 1
             // creating id for new item that will be put in the 
@@ -64,7 +64,9 @@ var UIController = (function(){
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputValue: '.add__value', 
-        inputBtn: '.add__btn'       
+        inputBtn: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list',   
     }
     return {
         // globalizing getting user input 
@@ -76,6 +78,38 @@ var UIController = (function(){
                 value: document.querySelector(DOMstrings.inputValue).value
             };
         },
+
+        addListItem: function(obj, type){
+            var html, newHtml, element;
+            //create a HTML string with placeholder text
+            if(type === 'inc'){
+                element = DOMstrings.incomeContainer  
+                html = '<div class="item clearfix" id="income-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            } else if(type === 'exp'){
+                element = DOMstrings.expensesContainer
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+            }
+            // replace placeholder text with actual data
+            newHtml = html.replace('%id%', obj.id);
+            newHtml = newHtml.replace('%description%', obj.description);
+            newHtml = newHtml.replace('%value%', obj.value, type);
+    
+            // insert html in the DOM
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHtml)
+            
+        },
+
+        clearFields: function(){
+            var fields, fieldsArr;
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue)
+            
+            fieldsArr = Array.prototype.slice.call(fields);
+            fieldsArr.forEach(function(current, index, array){
+                current.value = "";
+            })
+            fieldsArr[0].focus();
+        },
+        
         // globalizing the DOMstring object to acces it in the controller
         getDOMstrings: function(){
             return DOMstrings;
@@ -100,13 +134,16 @@ var controller = (function(budgetCtrl, UICtrl){
     };
 
     var ctrlAddItem = function(){
-        var input; newItem;
+        var input, newItem;
         // 1. get the field input data
         input = UICtrl.getInput();
         //console.log(input)
         // 2. add the item to the budget controller
-        newItem = budgetCtrl.addItem(input.type, input.description, input.value)
+        newItem = budgetCtrl.addItem(input.type, input.description, input.value);
         // 3. Add new item to the UI
+        UICtrl.addListItem(newItem, input.type);
+        // 4. Clear the fields
+        UICtrl.clearFields();
         // 4. calculate the budget
         // 5. display budget on UI
     }
