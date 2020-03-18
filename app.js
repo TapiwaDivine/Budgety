@@ -1,5 +1,5 @@
 /************************************************************************************
- *****************************************BUDGET CONTROLLER**************************
+ ***************************************** BUDGET CONTROLLER ************************
  ************************************************************************************/
 
 // module to handle budget data
@@ -23,6 +23,7 @@ var budgetController = (function(){
     var calculateTotal = function(type){
         var sum = 0;
         data.allItems[type].forEach(function(cur){
+            // adding all figures in array
             sum += cur.value;
         });
         data.totals[type] = sum;
@@ -39,7 +40,7 @@ var budgetController = (function(){
             inc: 0,
         },
         budget: 0,
-        percentage: -1,
+        percentage: -1
         
     };
     
@@ -79,9 +80,12 @@ var budgetController = (function(){
             // calculate the buget income - expenses
             data.budget = data.totals.inc - data.totals.exp
 
-            // calculate the percentage of income that we spent and rounding 
-            data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
-            console.log(data.percentage)
+            // calculate the percentage of income that we spent and rounding
+            if(data.totals.inc > 0){
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
         },
 
         // Function to return data from Database_________________________________GET BUDGET
@@ -90,7 +94,7 @@ var budgetController = (function(){
                 budget: data.budget,
                 totalInc: data.totals.inc,
                 totalExp: data.totals.exp,
-                percentage: data.totals.percentage
+                percentage: data.percentage
 
             }
         },
@@ -104,8 +108,9 @@ var budgetController = (function(){
 
 
 /************************************************************************************
- *****************************************UI CONTROLLER******************************
+ ************************************** UI CONTROLLER  ******************************
  ************************************************************************************/
+
 // Module to control the User Interface
 var UIController = (function(){
 
@@ -116,7 +121,12 @@ var UIController = (function(){
         inputValue: '.add__value', 
         inputBtn: '.add__btn',
         incomeContainer: '.income__list',
-        expensesContainer: '.expenses__list',   
+        expensesContainer: '.expenses__list', 
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
+
     }
     return {
         // globalizing getting user input______________________________________GET USER INPUT 
@@ -161,6 +171,21 @@ var UIController = (function(){
             })
             fieldsArr[0].focus();
         },
+        // Display budget on the UI___________________________________________________Display on UI
+        displayBudget: function(obj){
+
+            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
+            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExp;
+            
+
+            if(obj.percentage > 0){
+                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMstrings.percentageLabel).textContent = '---';
+            }
+            
+        },
 
         // globalizing the DOMstring object to acces it in the controller___DOMSTINGS TO CONTROLER
         getDOMstrings: function(){
@@ -197,7 +222,7 @@ var controller = (function(budgetCtrl, UICtrl){
         // 2. Return the budget
         var budget = budgetCtrl.getBudget();
         // 3. display budget on UI
-        console.log(budget)
+        UICtrl.displayBudget(budget)
 
     }
 
@@ -218,7 +243,6 @@ var controller = (function(budgetCtrl, UICtrl){
             UICtrl.clearFields();
             // 5. calculate and update budget
             updateBudget();
-
         }
     }
     
@@ -226,6 +250,15 @@ var controller = (function(budgetCtrl, UICtrl){
         // object with a function for initialising functions_________________________INIT
         init: function() {
             console.log('Application has started.')
+            // reseting all figures on the app initialization
+            UICtrl.displayBudget({
+                budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1
+
+                
+            })
             setupEventListeners();
         }
     }
