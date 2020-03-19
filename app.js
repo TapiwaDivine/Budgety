@@ -176,6 +176,14 @@ var UIController = (function(){
             
         },
 
+        deleteListItem: function(selectorID){
+
+            var el = document.getElementById(selectorID);
+            el.parentNode.removeChild(el);
+
+
+        },
+
         // function to clear fields after input is enter____________________CLEAR FIELD 
         clearFields: function(){
             var fields, fieldsArr;
@@ -244,6 +252,7 @@ var controller = (function(budgetCtrl, UICtrl){
         UICtrl.displayBudget(budget);
 
     }
+    
 
     // Controller function for adding items_______________________________CTRL ADD ITEMS
     var ctrlAddItem = function(){
@@ -280,16 +289,16 @@ var controller = (function(budgetCtrl, UICtrl){
             budgetCtrl.deleteItem(type, ID);
 
             // 2. delete the item from UI
-
+            UICtrl.deleteListItem(itemID);
 
             // update and show new totals
+            updateBudget();
         }
     };
     
     return {
         // object with a function for initialising functions_________________________INIT
         init: function() {
-            console.log('Application has started.')
             // reseting all figures on the app initialization
             UICtrl.displayBudget({
                 budget: 0,
