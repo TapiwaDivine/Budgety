@@ -10,6 +10,24 @@ var budgetController = (function(){
         this.id = id;
         this.description = description;
         this.value = value;
+        this.percentage = -1;
+    }
+
+     // a proto to calculate percentages for all expenses
+    Expense.prototype.calcPercentage = function (totalIncome) {
+
+        if(totalIncome > 0){
+            this.percentage = Math.round((this.value / totalIncome) *100);
+        } else {
+            this.percentage = -1;
+        }
+        
+
+    };
+
+    // a proto to get percentages
+    Expense.prototype.getPercentage = function () {
+        return this.percentage
     }
 
     // creating a constructor prototype obj for all incomes_____________________INCOME CONSTRUCTOR
@@ -104,6 +122,21 @@ var budgetController = (function(){
             } else {
                 data.percentage = -1;
             }
+        },
+
+        calculatePercentages: function () {
+
+            data.allItems.exp.forEach(function(cur){
+                cur.calcPercentage(data.totals.inc);
+            })
+
+        },
+
+        getPercentages: function(){
+            var allPerc = data.allItems.exp.map(function(cur){
+                return cur.getPercentage();
+            });
+            return allPerc
         },
 
         // Function to return data from Database_________________________________GET BUDGET
@@ -253,6 +286,17 @@ var controller = (function(budgetCtrl, UICtrl){
 
     }
     
+    var updatePecentages = function() {
+        
+        // 1. Calculate percentages
+        budgetCtrl.calculatePercentages();
+
+        // 2. Read percentages from the budget controller
+        var percentages = budgetCtrl.getPercentages();
+
+        // 3. Update UI with the new percentages
+        console.log(percentages)
+    }
 
     // Controller function for adding items_______________________________CTRL ADD ITEMS
     var ctrlAddItem = function(){
@@ -271,6 +315,9 @@ var controller = (function(budgetCtrl, UICtrl){
             UICtrl.clearFields();
             // 5. calculate and update budget
             updateBudget();
+
+            // 6. calculate and update percentage
+            updatePecentages();
         }
     };
 
