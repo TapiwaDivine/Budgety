@@ -247,10 +247,12 @@ var UIController = (function(){
             
         },
 
-        displayPercentanges = function (percentages) {
-
+        // Function to display percentage on each Item
+        displayPercentanges: function (percentages) {
+            // selecting the all nodes added by user's inputs
             var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
 
+            // looping thru each node list
             var nodeListForEach = function(list, callback){
 
                 for(var i = 0; i < list.length; i++){
@@ -258,16 +260,25 @@ var UIController = (function(){
                 }
             };
 
+            // passing % to each node
             nodeListForEach(fields, function(current, index){
                 
                 if(percentages[index] > 0){
                     current.textContent = percentages[index] + '%';
                 }else {
-                    current.textContent = '---'
+                    current.textContent = '---';
                 }
             });
+        },
 
+        /* format the number in with 2 decimal points, 
+        comma seperating thousands and + for inc & - for exp
+        */
+        formatNumber: function(num, type) {
 
+            num = Math.abs(num);
+            // fixing our number to  2 decimal points
+            num = num.toFixed(2);
 
         },
 
