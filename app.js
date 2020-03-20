@@ -178,6 +178,40 @@ var UIController = (function(){
         expensesPercLabel: '.item__percentage',
 
     };
+    /* format the number in with 2 decimal points, 
+        comma seperating thousands and + for inc & - for exp
+        */
+       var formatNumber = function(num, type) {
+        var numSplit, int, dec, type;
+
+        num = Math.abs(num);
+        // fixing our number to  2 decimal points
+        num = num.toFixed(2);
+
+        /* dividing number into 2 parts interger side and decimal side 
+        and store them in an array*/
+
+        numSplit = num.split('.');
+
+        // first element of the array
+        int = numSplit[0];
+        // getting last element
+    
+
+        if(int.length > 3){
+            // condition to put a comma after
+            int = int.substr(0, int.length - 3) + ',' + int.substr(int.length - 3, 3);
+    
+        }
+
+        dec = numSplit[1];
+        
+
+        return (type === 'exp' ?  '-' :  '+') + ' ' + int + '.'+ dec;
+        
+    };
+
+
     return {
         // globalizing getting user input______________________________________GET USER INPUT 
         getInput: function(){
@@ -203,7 +237,7 @@ var UIController = (function(){
             // replace placeholder text with actual data_______________________DATA DISPLAY
             newHtml = html.replace('%id%', obj.id);
             newHtml = newHtml.replace('%description%', obj.description);
-            newHtml = newHtml.replace('%value%', obj.value, type);
+            newHtml = newHtml.replace('%value%', formatNumber( obj.value, type));
     
             // insert html in the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
@@ -233,10 +267,13 @@ var UIController = (function(){
         },
         // Display budget on the UI___________________________________________________Display on UI
         displayBudget: function(obj){
-
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expenseLabel).textContent = obj.totalExp;
+            var type;
+            obj.budget > 0 ? type = 'inc' : type = 'exp'
+            document.querySelector(DOMstrings.budgetLabel).textContent = formatNumber(obj.budget,
+                                                                                        type);
+            document.querySelector(DOMstrings.incomeLabel).textContent = formatNumber(obj.totalInc,
+                                                                                        'inc');
+            document.querySelector(DOMstrings.expenseLabel).textContent = formatNumber(obj.totalExp, 'exp');
             
 
             if(obj.percentage > 0){
@@ -271,17 +308,7 @@ var UIController = (function(){
             });
         },
 
-        /* format the number in with 2 decimal points, 
-        comma seperating thousands and + for inc & - for exp
-        */
-        formatNumber: function(num, type) {
-
-            num = Math.abs(num);
-            // fixing our number to  2 decimal points
-            num = num.toFixed(2);
-
-        },
-
+       
         // globalizing the DOMstring object to acces it in the controller___DOMSTINGS TO CONTROLER
         getDOMstrings: function(){
             return DOMstrings;
