@@ -309,6 +309,7 @@ var UIController = (function(){
             });
         },
 
+        // function to diplay Month & year
         displayMonthYear: function(){
             var now,month, months, year;
             // setting a new date constructor
@@ -316,7 +317,7 @@ var UIController = (function(){
 
             months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
                         'September', 'October', 'November', 'December'];
-
+            // get month method of DATE to display month whic counts from 0-11 as 12months
             month = now.getMonth();
 
             // getting the full year 
