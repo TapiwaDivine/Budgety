@@ -176,12 +176,13 @@ var UIController = (function(){
         percentageLabel: '.budget__expenses--percentage',
         container: '.container',
         expensesPercLabel: '.item__percentage',
+        dateLabel: '.budget__title--month',
 
     };
     /* format the number in with 2 decimal points, 
         comma seperating thousands and + for inc & - for exp
         */
-       var formatNumber = function(num, type) {
+    var formatNumber = function(num, type) {
         var numSplit, int, dec, type;
 
         num = Math.abs(num);
@@ -209,6 +210,14 @@ var UIController = (function(){
 
         return (type === 'exp' ?  '-' :  '+') + ' ' + int + '.'+ dec;
         
+    };
+
+    // looping thru each node list 
+    var nodeListForEach = function(list, callback){
+
+        for(var i = 0; i < list.length; i++){
+            callback(list[i], i);
+        }
     };
 
 
@@ -287,15 +296,7 @@ var UIController = (function(){
         // Function to display percentage on each Item
         displayPercentanges: function (percentages) {
             // selecting the all nodes added by user's inputs
-            var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);
-
-            // looping thru each node list
-            var nodeListForEach = function(list, callback){
-
-                for(var i = 0; i < list.length; i++){
-                    callback(list[i], i);
-                }
-            };
+            var fields = document.querySelectorAll(DOMstrings.expensesPercLabel);   
 
             // passing % to each node
             nodeListForEach(fields, function(current, index){
@@ -308,7 +309,39 @@ var UIController = (function(){
             });
         },
 
-       
+        displayMonthYear: function(){
+            var now,month, months, year;
+            // setting a new date constructor
+            now = new Date();
+
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 
+                        'September', 'October', 'November', 'December'];
+
+            month = now.getMonth();
+
+            // getting the full year 
+            year = now.getFullYear();
+            document.querySelector(DOMstrings.dateLabel).textContent = months[month] + ' ' +year
+        }, 
+
+        changeType: function() {
+            // selecting input fields
+            var fields = document.querySelectorAll(
+                DOMstrings.inputType + ',' +
+                DOMstrings.inputDescription + ',' +
+                DOMstrings.inputValue
+            );
+            
+            // change the focus color of the input to red if its in exp
+            nodeListForEach(fields, function(cur){
+                cur.classList.toggle('red-focus');// red-focus is css clas targeted
+            });
+
+            // selecting the btn to change when user select the exp *'red' is a css class*
+            document.querySelector(DOMstrings.inputBtn).classList.toggle('red');
+
+        },
+    
         // globalizing the DOMstring object to acces it in the controller___DOMSTINGS TO CONTROLER
         getDOMstrings: function(){
             return DOMstrings;
@@ -337,6 +370,8 @@ var controller = (function(budgetCtrl, UICtrl){
             }
         });
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+        document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changeType);
+
     };
     // control function to update Budget__________________________________Control Budget
     var updateBudget = function(){
@@ -348,7 +383,7 @@ var controller = (function(budgetCtrl, UICtrl){
         UICtrl.displayBudget(budget);
 
     }
-    
+    // control function to update Pecentages__________________________________Control Pecentages
     var updatePecentages = function() {
         
         // 1. Calculate percentages
@@ -410,6 +445,7 @@ var controller = (function(budgetCtrl, UICtrl){
         // object with a function for initialising functions_________________________INIT
         init: function() {
             // reseting all figures on the app initialization
+            UICtrl.displayMonthYear();
             UICtrl.displayBudget({
                 budget: 0,
                 totalInc: 0,
